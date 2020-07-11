@@ -27,7 +27,7 @@ local aimbotToggle = "F1";
 local aimbotToggled;
 
 -- // Aimbot library
-local EzAimbot = loadstring(game:HttpGetAsync("https://pastebin.com/raw/2tVcdG5p"))();
+local EzAimbot = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/AestheticalByte/UniversalAimbot/master/Universal/AimbotLibrary.lua"))();
 
 -- // Toggle Aimbot
 
