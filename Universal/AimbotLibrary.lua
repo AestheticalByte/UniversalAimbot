@@ -38,28 +38,33 @@ end
 
 local Target;
 
-local ClosestPlayer = function(friendlyfire)
+function aimingPart(plr)
+    if _G.partTarget == "Head" then
+        if plr.Character:FindFirstChild("Head") and plr ~= LocalPlayer then
+            aimPart = "Head";
+        else
+            aimPart = nil;
+        end
+    elseif _G.partTarget == "Torso" then
+        if plr.Character:FindFirstChild("Torso") and plr ~= LocalPlayer then
+            aimPart = "Torso";
+        elseif plr.Character:FindFirstChild("UpperTorso") and plr ~= LocalPlayer then
+            aimPart = "UpperTorso";
+        else
+            aimPart = nil;
+        end
+    end
+end
+
+local lockPlayer = function(friendlyfire)
     local MousePos = MousePosition()
     local Radius = FOV.Radius
     local Closest = math.huge
     for k, v in pairs(Players:GetPlayers()) do
         pcall(function()
             if HandleTeam(v) then
-                if _G.partTarget == "Head" then
-                    if v.Character:FindFirstChild("Head") and v ~= LocalPlayer then
-                        aimPart = "Head";
-                    else
-                        aimPart = nil;
-                    end
-                elseif _G.partTarget == "Torso" then
-                    if v.Character:FindFirstChild("Torso") and v ~= LocalPlayer then
-                        aimPart = "Torso";
-                    elseif v.Character:FindFirstChild("UpperTorso") and v ~= LocalPlayer then
-                        aimPart = "UpperTorso";
-                    else
-                        aimPart = nil;
-                    end
-                end
+
+                aimingPart(v);
 
                 local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
                 if aimPart and not Target then
@@ -70,7 +75,8 @@ local ClosestPlayer = function(friendlyfire)
                             Target = v
                         end
                     end
-                elseif aimPart and Target then
+                elseif Target then
+                    aimingPart(Target);
                     local obscuringParts = Camera:GetPartsObscuringTarget({Character[aimPart].Position, Target.Character[aimPart].Position}, {Character, Target.Character});
                     if OnScreen and #obscuringParts > 0 then
                         for _, v in pairs(obscuringParts) do
@@ -143,11 +149,11 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
             if not _G.lockedOn then
                 Target = nil;
             end
-            
+
             if _G.lockedOn then
-                local ClosestPlayer = ClosestPlayer(friendlyfire)
-                if ClosestPlayer then
-                    Camera.CFrame = CFrame.new(Camera.CFrame.p, ClosestPlayer.Character[aimPart].CFrame.p);
+                local lockPlayer = lockPlayer(friendlyfire)
+                if lockPlayer then
+                    Camera.CFrame = CFrame.new(Camera.CFrame.p, lockPlayer.Character[aimPart].CFrame.p);
                 end
                 RefreshInternals()
             end
