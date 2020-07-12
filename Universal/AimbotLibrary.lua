@@ -7,7 +7,7 @@
 local EzAimbot = {}
 
 --// Internal
-local buildID = "0.0.1"
+local buildID = "0.0.2"
 warn('Build ID : '..buildID)
 
 local aimPart;
@@ -86,6 +86,7 @@ local lockPlayer = function(friendlyfire)
                         end
                     end
                 elseif aimPart and not _G.wallOn then
+                    local Point = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
                     if #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
                         local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude
                         if Distance < math.min(Radius,Closest) then
