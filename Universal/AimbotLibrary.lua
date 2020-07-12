@@ -15,14 +15,31 @@ local Viewport = Camera.ViewportSize
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character
-local Head = Character.Head
 local Mouse = LocalPlayer:GetMouse()
 local FOV = nil
 local RunService = game:GetService("RunService")
 local InputService = game:GetService("UserInputService")
+
 local MousePosition = function()
     return Vector2.new(Mouse.X,Mouse.Y)
 end
+
+function aimPart(bool)
+    if bool then
+        if v.Character:FindFirstChild("Head") and v ~= LocalPlayer then
+            aimPart = 'Head';
+        end
+    elseif not bool then
+        if v ~= LocalPlayer then
+            if v.Character:FindFirstChild("Torso") then
+                aimPart = 'Torso';
+            elseif v.Character:FindFirstChild("UpperTorso") then
+                aimPart = 'UpperTorso'
+            end
+        end
+    end
+end
+
 local ClosestPlayer = function(friendlyFire)
     local MousePos = MousePosition()
     local Radius = FOV.Radius
@@ -43,35 +60,14 @@ local ClosestPlayer = function(friendlyFire)
     for k,v in pairs(Players:GetPlayers()) do
         pcall(function()
             if HandleTeam(v) then
-                if _G.headTarget then
-                    if v.Character:FindFirstChild("Head") and v ~= LocalPlayer then
-                        aimPart = "Head";
-                        local Point, OnScreen = Camera:WorldToScreenPoint(v.Character.Head.Position)
-                        if OnScreen and #Camera:GetPartsObscuringTarget({Head.Position, v.Character.Head.Position}, {Character, v.Character}) == 0 then
-                            local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).Magnitude
-                            if Distance < math.min(Radius, Closest) then
-                                Closest = Distance
-                                Target = v
-                            end
-                        end
-                    end
-                elseif not _G.headTarget then
-                    if v ~= LocalPlayer then
+                aimPart(_G.headTarget);
+                local Point, OnScreen = Camera:WorldToScreenPoint(v.Character.Head.Position);
+                if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character.Head.Position}, {Character, v.Character}) == 0 then
+                    local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).Magnitude;
 
-                        if v.Character:FindFirstChild("Torso") then
-                            aimPart = "Torso";
-                        elseif v.Character:FindFirstChild("UpperTorso") then
-                            aimPart = "UpperTorso";
-                        end
-
-                        local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
-                        if OnScreen and #Camera:GetPartsObscuringTarget({[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
-                            local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).Magnitude
-                            if Distance < math.min(Radius, Closest) then
-                                Closest = Distance
-                                Target = v
-                            end
-                        end
+                    if Distance < math.min(Radius, Closest) then
+                        Closest = Distance;
+                        Target = v;
                     end
                 end
             end
@@ -79,11 +75,12 @@ local ClosestPlayer = function(friendlyFire)
     end
     return Target
 end
+
 local RefreshInternals = function()
-    Camera = workspace.CurrentCamera
-    LocalPlayer = Players.LocalPlayer
-    Character = LocalPlayer.Character
-    Head = Character.Head
+    Camera = workspace.CurrentCamera;
+    LocalPlayer = Players.LocalPlayer;
+    Character = LocalPlayer.Character;
+    aimPart(_G.headTarget);
 end
 
 --// Main functions
@@ -108,7 +105,7 @@ EzAimbot.Enable = function(showFov, fovConfig, friendlyFire)
     assert(type(fovconfig["Size"])=="number","EzAimbot.Enable | Expected Size in argument #2")
     assert(type(fovconfig["Sides"])=="number","EzAimbot.Enable | Expected Sides in argument #2")
     assert(typeof(fovconfig["Color"])=="Color3","EzAimbot.Enable | Expected Color in argument #2")
-    assert(type(friendlyFire)=="boolean","EzAimbot.Enable | Expected Boolean as argument #4")
+    assert(type(friendlyFire)=="boolean","EzAimbot.Enable | Expected Boolean as argument #3")
     local Size = fovConfig["Size"]
     local Sides = fovConfig["Sides"]
     local Color = fovConfig["Color"]
