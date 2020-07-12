@@ -15,7 +15,7 @@ local Viewport = Camera.ViewportSize
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character
-local Head = Character.Head
+--local Head = Character.Head
 local Mouse = LocalPlayer:GetMouse()
 local FOV;
 local RunService = game:GetService("RunService")
@@ -37,31 +37,28 @@ function HandleTeam(player)
     return true;
 end
 
-function aimSet(target, plr)
-    print(target)
-    if target == "Head" then
-        if plr.Character:FindFirstChild("Head") and v ~= LocalPlayer then
-            aimPart = 'Head';
-            return true;
-        elseif not plr.Character:FindFirstChild("Head") or v == LocalPlayer then
-            return false;
-        end
-    elseif target == "Torso" then
-        if v ~= LocalPlayer then
-            if plr.Character:FindFirstChild("Torso") then
-                aimPart = 'Torso';
-                return true;
-            elseif plr.Character:FindFirstChild("UpperTorso") then
-                aimPart = 'UpperTorso'
-                return true;
-            end
-        elseif v == LocalPlayer or not (plr.Character:FindFirstChild("UpperTorso") or plr.Character:FindFirstChild("Torso")) then
-            return false;
-        end
-    end
-    warn("This line of code shouldn't print!")
-    return false;
-end
+-- function aimSet(target, plr)
+--     if target == "Head" then
+--         if plr.Character:FindFirstChild("Head") and v ~= LocalPlayer then
+--             aimPart = 'Head';
+--             return true;
+--         elseif not plr.Character:FindFirstChild("Head") or v == LocalPlayer then
+--             return false;
+--         end
+--     elseif target == "Torso" then
+--         if v ~= LocalPlayer and  plr.Character:FindFirstChild("Torso") then
+--             aimPart = 'Torso';
+--             return true;
+--         elseif v ~= LocalPlayer and plr.Character:FindFirstChild("UpperTorso") then
+--             aimPart = 'UpperTorso'
+--             return true;
+--         elseif v == LocalPlayer or not (plr.Character:FindFirstChild("UpperTorso") or plr.Character:FindFirstChild("Torso")) then
+--             return false;
+--         end
+--     end
+--     warn("This line of code shouldn't print!")
+--     return false;
+-- end
 
 local ClosestPlayer = function(friendlyfire)
     local MousePos = MousePosition()
@@ -71,11 +68,26 @@ local ClosestPlayer = function(friendlyfire)
     for k, v in pairs(Players:GetPlayers()) do
         pcall(function()
             if HandleTeam(v) then
-                if aimSet(_G.partTarget, v) then
-                --if v.Character:FindFirstChild("Head") and v ~= LocalPlayer then
-                    local Point,OnScreen = Camera:WorldToScreenPoint(v.Character.Head.Position)
-                    if OnScreen and #Camera:GetPartsObscuringTarget({Head.Position,v.Character.Head.Position},{Character,v.Character}) == 0 then
-                        local Distance = (Vector2.new(Point.X,Point.Y) - MousePosition()).magnitude
+                if _G.partTarget == "Head" then
+                    if v.Character:FindFirstChild("Head") and v ~= LocalPlayer then
+                        aimPart = "Head";
+                    else
+                        aimPart = nil;
+                    end
+                elseif _G.partTarget == "Torso" then
+                    if v.Character:FindFirstChild("Torso") and v ~= LocalPlayer then
+                        aimPart = "Torso";
+                    elseif v.Character:FindFirstChild("UpperTorso") and v ~= LocalPlayer then
+                        aimPart = "UpperTorso";
+                    else
+                        aimPart = nil;
+                    end
+                end
+        
+                if aimPart then
+                    local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
+                    if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
+                        local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude
                         if Distance < math.min(Radius,Closest) then
                             Closest = Distance
                             Target = v
@@ -91,7 +103,6 @@ local RefreshInternals = function()
     Camera = workspace.CurrentCamera
     LocalPlayer = Players.LocalPlayer
     Character = LocalPlayer.Character
-    Head = Character.Head
 end
 
 --// Main functions
