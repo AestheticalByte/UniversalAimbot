@@ -46,7 +46,7 @@ function aimPart(target, plr)
             return false;
         end
     end
-    print("This line of code shouldn't print!")
+    warn("This line of code shouldn't print!")
 end
 
 function HandleTeam(player)
@@ -70,14 +70,13 @@ local closestPlayer = function(friendlyfire)
         pcall(function()
             if HandleTeam(v) then
                 if aimPart(_G.partTarget, v) then
-                    print("---")
-                    print("Player detected : "..v);
                     local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position);
                     if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
                         local distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude;
                         if distance < math.min(Radius, closest) then
                             closest = distance;
                             target = v;
+                            print("Target Set")
                         end
                     end
                 end
