@@ -15,6 +15,7 @@ local Viewport = Camera.ViewportSize;
 local Players = game:GetService("Players");
 local LocalPlayer = Players.LocalPlayer;
 local Character = LocalPlayer.Character;
+local Head = Character.Head;
 local Mouse = LocalPlayer:GetMouse();
 local FOV;
 local RunService = game:GetService("RunService");
@@ -70,13 +71,12 @@ local closestPlayer = function(friendlyfire)
         pcall(function()
             if HandleTeam(v) then
                 if aimPart(_G.partTarget, v) then
-                    local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position);
-                    if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
-                        local distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude;
-                        if distance < math.min(Radius, closest) then
-                            closest = distance;
-                            target = v;
-                            print("Target Set")
+                    local Point,OnScreen = Camera:WorldToScreenPoint(v.Character.Head.Position)
+                    if OnScreen and #Camera:GetPartsObscuringTarget({Head.Position,v.Character.Head.Position},{Character,v.Character}) == 0 then
+                        local Distance = (Vector2.new(Point.X,Point.Y) - MousePosition()).magnitude
+                        if Distance < math.min(Radius,Closest) then
+                            Closest = Distance
+                            Target = v
                         end
                     end
                 end
