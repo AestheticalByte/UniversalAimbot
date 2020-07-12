@@ -106,9 +106,9 @@ EzAimbot.Enable = function(showfov, fovconfig, friendlyfire)
     assert(type(fovconfig["Sides"])=="number","EzAimbot.Enable | Expected Sides in argument #2")
     assert(typeof(fovconfig["Color"])=="Color3","EzAimbot.Enable | Expected Color in argument #2")
     assert(type(friendlyfire)=="boolean","EzAimbot.Enable | Expected Boolean as argument #3")
-    local Size = fovConfig["Size"]
-    local Sides = fovConfig["Sides"]
-    local Color = fovConfig["Color"]
+    local Size = fovconfig["Size"]
+    local Sides = fovconfig["Sides"]
+    local Color = fovconfig["Color"]
     if showfov then
         FOV = Drawing.new("Circle")
         local FOV = FOV
