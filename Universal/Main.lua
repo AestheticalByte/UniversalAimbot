@@ -16,6 +16,7 @@ local fovEnabled = true;
 local fovSides = 50; 
 local aimbotToggled;
 local headToggled = true;
+local verNumber = 1.1.2;
 
 -- // Aimbot library
 local EzAimbot = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/AestheticalByte/UniversalAimbot/master/Universal/AimbotLibrary.lua"))();
@@ -46,3 +47,4 @@ UserInputService.InputBegan:Connect(function(key)
 end)
 
 warn('Aimbot script loaded...');
+warn('version. '..verNumber);
