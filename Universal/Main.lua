@@ -24,21 +24,21 @@ local EzAimbot = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com
 local UserInputService = game:GetService("UserInputService");
 
 UserInputService.InputBegan:Connect(function(key)
-    if key.KeyCode == Enum.KeyCode[aimSettings['aimToggle']] and not aimbotToggled then
+    if key.KeyCode == Enum.KeyCode[_G.aimSettings['aimToggle']] and not aimbotToggled then
         warn("Aimbot Enabled");
-        EzAimbot.Enable(fovEnabled, {["Size"]= aimSettings['fovSize'], ["Sides"]= aimSettings['fovSides'], ["Color"]= aimSettings['fovColor']}, aimSettings['friendlyFire']);
+        EzAimbot.Enable(fovEnabled, {["Size"]= _G.aimSettings['fovSize'], ["Sides"]= _G.aimSettings['fovSides'], ["Color"]= _G.aimSettings['fovColor']}, _G.aimSettings['friendlyFire']);
         aimbotToggled = true;
-    elseif key.KeyCode == Enum.KeyCode[aimSettings['aimToggle']] and aimbotToggled then
+    elseif key.KeyCode == Enum.KeyCode[_G.aimSettings['aimToggle']] and aimbotToggled then
         warn("Aimbot Disabled");
         EzAimbot.Disable();
         aimbotToggled = false;
     end
 
-    if key.KeyCode == Enum.KeyCode[aimSettings['togglePart']] and headToggled then
+    if key.KeyCode == Enum.KeyCode[_G.aimSettings['togglePart']] and headToggled then
         warn("Target Set : Torso")
         headToggled = false;
         _G.partTarget = 'Torso';
-    elseif key.KeyCode == Enum.KeyCode[aimSettings['togglePart']] and not headToggled then
+    elseif key.KeyCode == Enum.KeyCode[_G.aimSettings['togglePart']] and not headToggled then
         warn("Target Set : Head")
         headToggled = true;
         _G.partTarget = 'Head';
