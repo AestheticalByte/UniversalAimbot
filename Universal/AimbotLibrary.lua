@@ -15,7 +15,6 @@ local Viewport = Camera.ViewportSize
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Character = LocalPlayer.Character
---local Head = Character.Head
 local Mouse = LocalPlayer:GetMouse()
 local FOV;
 local RunService = game:GetService("RunService")
