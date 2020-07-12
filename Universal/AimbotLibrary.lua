@@ -26,6 +26,7 @@ end
 
 function aimPart(target, plr)
     if target == "Head" then
+        print("Head Set!")
         if plr.Character:FindFirstChild("Head") and v ~= LocalPlayer then
             aimPart = 'Head';
             return true;
@@ -33,6 +34,7 @@ function aimPart(target, plr)
             return false;
         end
     elseif target == "Torso" then
+        print("Torso Set!")
         if v ~= LocalPlayer then
             if plr.Character:FindFirstChild("Torso") then
                 aimPart = 'Torso';
@@ -48,6 +50,7 @@ function aimPart(target, plr)
 end
 
 function HandleTeam(player)
+    print("Checking")
     local Team = LocalPlayer.Team;
     if player.Team == Team and friendlyfire then
         return true;
@@ -77,7 +80,11 @@ local closestPlayer = function(friendlyfire)
                             target = v;
                         end
                     end
+                elseif not aimPart(_G.partTarget, v) then
+                    print("yea something definitely broke")
                 end
+            elseif not HandleTeam(v) then
+                print("uh oh we cant attack this mans")
             end
         end)
     end
