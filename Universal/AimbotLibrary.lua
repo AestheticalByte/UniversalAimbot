@@ -36,11 +36,13 @@ function HandleTeam(player)
     return true;
 end
 
-function checkObscuring()
-    local partsObscuring = Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character});
-    for _, v in pairs(partsObscuring) do
-        if v.Parent:FindFirstChild('Humanoid') then
-            return true;
+function checkObscuring(plr)
+    if plr then
+        local partsObscuring = Camera:GetPartsObscuringTarget({Character[aimPart].Position, plr.Character[aimPart].Position}, {Character, plr.Character});
+        for _, v in pairs(partsObscuring) do
+            if v.Parent:FindFirstChild('Humanoid') then
+                return true;
+            end
         end
     end
     return false;
@@ -74,13 +76,13 @@ local ClosestPlayer = function(friendlyfire)
                     local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
                     if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
                         local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude
-                        if Distance < math.min(Radius,Closest) then
-                            Closest = Distance
-                            Target = v
-                        end
-                    elseif OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) > 0 then
-                        if checkObscuring() then
+                        if checkObscuring(Target) then
                             print("Already locked onto a player!");
+                        elseif not checkObscuring(Target) then
+                            if Distance < math.min(Radius,Closest) then
+                                Closest = Distance
+                                Target = v
+                            end
                         end
                     end
                 end
