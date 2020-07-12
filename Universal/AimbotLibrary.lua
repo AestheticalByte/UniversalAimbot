@@ -119,13 +119,13 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
         FOV.Visible = true
     end
 
-    local rate = 0.005; --(runs loop regardless of frames)
+    _G.rate = 0.005; --(runs loop regardless of frames)
     local amount = 0;
-    print("Rate is "..rate)
+    print("Rate is ".._G.rate)
     MainLoop = RunService.Heartbeat:Connect(function(dlTime)
         amount = amount + dlTime;
-        while amount >= rate do
-            amount = amount - rate
+        while amount >= _G.rate do
+            amount = amount - _G.rate
             if FOV then
                 FOV.Position = MousePosition() + Vector2.new(0, 35);
             end
