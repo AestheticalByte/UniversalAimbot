@@ -60,10 +60,6 @@ local ClosestPlayer = function(friendlyfire)
                         aimPart = nil;
                     end
                 end
-                
-                if not _G.lockedOn then
-                    Target = nil;
-                end
 
                 local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
                 if aimPart and not Target then
@@ -143,6 +139,11 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
             if FOV then
                 FOV.Position = MousePosition() + Vector2.new(0, 35);
             end
+
+            if not _G.lockedOn then
+                Target = nil;
+            end
+            
             if _G.lockedOn then
                 local ClosestPlayer = ClosestPlayer(friendlyfire)
                 if ClosestPlayer then
