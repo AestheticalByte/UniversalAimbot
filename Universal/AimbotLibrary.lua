@@ -8,6 +8,7 @@ local EzAimbot = {}
 
 --// Internal
 
+local aimPart;
 local MainLoop;
 local Camera = workspace.CurrentCamera
 local Viewport = Camera.ViewportSize
@@ -36,15 +37,42 @@ function HandleTeam(player)
     return true;
 end
 
+function aimSet(target, plr)
+    print(target)
+    if target == "Head" then
+        if plr.Character:FindFirstChild("Head") and v ~= LocalPlayer then
+            aimPart = 'Head';
+            return true;
+        elseif not plr.Character:FindFirstChild("Head") or v == LocalPlayer then
+            return false;
+        end
+    elseif target == "Torso" then
+        if v ~= LocalPlayer then
+            if plr.Character:FindFirstChild("Torso") then
+                aimPart = 'Torso';
+                return true;
+            elseif plr.Character:FindFirstChild("UpperTorso") then
+                aimPart = 'UpperTorso'
+                return true;
+            end
+        elseif v == LocalPlayer or not (plr.Character:FindFirstChild("UpperTorso") or plr.Character:FindFirstChild("Torso")) then
+            return false;
+        end
+    end
+    warn("This line of code shouldn't print!")
+    return false;
+end
+
 local ClosestPlayer = function(friendlyfire)
     local MousePos = MousePosition()
     local Radius = FOV.Radius
     local Closest = math.huge
     local Target = nil
-    for k,v in pairs(Players:GetPlayers()) do
+    for k, v in pairs(Players:GetPlayers()) do
         pcall(function()
             if HandleTeam(v) then
-                if v.Character:FindFirstChild("Head") and v ~= LocalPlayer then
+                if aimSet(_G.partTarget, v) then
+                --if v.Character:FindFirstChild("Head") and v ~= LocalPlayer then
                     local Point,OnScreen = Camera:WorldToScreenPoint(v.Character.Head.Position)
                     if OnScreen and #Camera:GetPartsObscuringTarget({Head.Position,v.Character.Head.Position},{Character,v.Character}) == 0 then
                         local Distance = (Vector2.new(Point.X,Point.Y) - MousePosition()).magnitude
@@ -110,8 +138,8 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
         if _G.lockedOn then
             local ClosestPlayer = ClosestPlayer(friendlyfire)
             if ClosestPlayer then
-                print(_G.partTarget)
-                Camera.CFrame = CFrame.new(Camera.CFrame.p,ClosestPlayer.Character.Head.CFrame.p)
+                print(aimPart);
+                Camera.CFrame = CFrame.new(Camera.CFrame.p,ClosestPlayer.Character.Head.CFrame.p);
             end
             RefreshInternals()
         end
