@@ -24,15 +24,15 @@ local MousePosition = function()
     return Vector2.new(Mouse.X,Mouse.Y)
 end
 
-function aimPart(bool, plr)
-    if bool then
+function aimPart(target, plr)
+    if target == "Head" then
         if plr.Character:FindFirstChild("Head") and v ~= LocalPlayer then
             aimPart = 'Head';
             return true;
-        else
+        elseif not plr.Character:FindFirstChild("Head") or v == LocalPlayer then
             return false;
         end
-    elseif not bool then
+    elseif target == "Torso" then
         if v ~= LocalPlayer then
             if plr.Character:FindFirstChild("Torso") then
                 aimPart = 'Torso';
@@ -41,47 +41,47 @@ function aimPart(bool, plr)
                 aimPart = 'UpperTorso'
                 return true;
             end
-        else
+        elseif v == LocalPlayer or not (plr.Character:FindFirstChild("UpperTorso") or plr.Character:FindFirstChild("Torso")) then
             return false;
         end
     end
 end
 
-local ClosestPlayer = function(friendlyfire) -- Most of this stuff was ripped right out of my upcoming hub
+function HandleTeam(player)
+    local Team = LocalPlayer.Team
+    if player.Team == Team and friendlyfire then
+        return true;
+    elseif player.Team == Team and friendlyfire == false then
+        return false;
+    else
+        return true;
+    end
+    return true;
+end
+
+local closestPlayer = function(friendlyfire)
     local MousePos = MousePosition()
     local Radius = FOV.Radius
-    local Closest = math.huge
-    local Target = nil
-    local function HandleTeam(player)
-        local Team = LocalPlayer.Team
-        local Result = true
-        if player.Team == Team and friendlyfire then
-            Result = true
-        elseif player.Team == Team and friendlyfire == false then
-            Result = false
-        else
-            Result = true
-        end
-        return Result
-    end
-    for k,v in pairs(Players:GetPlayers()) do
+    local closest = math.huge
+    local target;
+    for k, v in pairs(Players:GetPlayers()) do
         pcall(function()
             if HandleTeam(v) then
-                if aimPart(_G.headTarget, v) then
-                    local Point,OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
-                    if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position,v.Character[aimPart].Position},{Character,v.Character}) == 0 then
-                        local Distance = (Vector2.new(Point.X,Point.Y) - MousePosition()).magnitude
-                        if Distance < math.min(Radius,Closest) then
-                            Closest = Distance
-                            Target = v
-                            print(Target)
+                if aimPart(_G.partTarget, v) then
+                    print("Player detected : "..v)
+                    local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
+                    if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
+                        local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude
+                        if Distance < math.min(Radius, closest) then
+                            closest = Distance
+                            target = v
                         end
                     end
                 end
             end
         end)
     end
-    return Target
+    return target
 end
 
 local RefreshInternals = function()
@@ -134,9 +134,9 @@ EzAimbot.Enable = function(showfov, fovconfig, friendlyfire)
         end
 
         if _G.lockedOn then
-            local ClosestPlayer = ClosestPlayer(friendlyfire)
-            if ClosestPlayer then
-                Camera.CFrame = CFrame.new(Camera.CFrame.p, ClosestPlayer.Character[aimPart].CFrame.p)
+            local closestPlayer = closestPlayer(friendlyfire)
+            if closestPlayer then
+                Camera.CFrame = CFrame.new(Camera.CFrame.p, closestPlayer.Character[aimPart].CFrame.p)
             end
             RefreshInternals()
         end

@@ -11,7 +11,7 @@ Mouse.Button2Up:Connect(function()
 end)
 
 -- // Basic vars
-_G.headTarget = true;
+_G.partTarget = 'Head'; -- Head, Torso
 local fovEnabled = true;
 local fovSides = 50; 
 local aimbotToggled;
@@ -44,11 +44,11 @@ UserInputService.InputBegan:Connect(function(key)
     if key.KeyCode == Enum.KeyCode[togglePart] and headToggled then
         warn("Target Set : Torso")
         headToggled = false;
-        _G.headTarget = false;
+        _G.partTarget = 'Torso';
     elseif key.KeyCode == Enum.KeyCode[togglePart] and not headToggled then
         warn("Target Set : Head")
         headToggled = true;
-        _G.headTarget = true;
+        _G.partTarget = 'Head';
     end
 end)
 
