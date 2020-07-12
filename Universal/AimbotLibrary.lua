@@ -26,8 +26,8 @@ end
 
 function aimPart(target, plr)
     if target == "Head" then
-        print("Head Set!")
         if plr.Character:FindFirstChild("Head") and v ~= LocalPlayer then
+            print('Set Head')
             aimPart = 'Head';
             return true;
         elseif not plr.Character:FindFirstChild("Head") or v == LocalPlayer then
@@ -46,11 +46,13 @@ function aimPart(target, plr)
         elseif v == LocalPlayer or not (plr.Character:FindFirstChild("UpperTorso") or plr.Character:FindFirstChild("Torso")) then
             return false;
         end
+    else
+        print("Something's wrong")
+        return false;
     end
 end
 
 function HandleTeam(player)
-    print("Checking")
     local Team = LocalPlayer.Team;
     if player.Team == Team and friendlyfire then
         return true;
@@ -83,8 +85,6 @@ local closestPlayer = function(friendlyfire)
                 elseif not aimPart(_G.partTarget, v) then
                     print("yea something definitely broke")
                 end
-            elseif not HandleTeam(v) then
-                print("uh oh we cant attack this mans")
             end
         end)
     end
@@ -143,7 +143,7 @@ EzAimbot.Enable = function(showfov, fovconfig, friendlyfire)
         if _G.lockedOn then
             local closestPlayer = closestPlayer(friendlyfire)
             if closestPlayer then
-                print(aimPart);
+                print("Locked onto : "..aimPart)
                 Camera.CFrame = CFrame.new(Camera.CFrame.p, closestPlayer.Character[aimPart].CFrame.p);
             end
             RefreshInternals()
