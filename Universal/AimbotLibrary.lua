@@ -19,26 +19,28 @@ local Mouse = LocalPlayer:GetMouse()
 local FOV;
 local RunService = game:GetService("RunService")
 local InputService = game:GetService("UserInputService")
+
 local MousePosition = function()
     return Vector2.new(Mouse.X,Mouse.Y)
 end
+
+function HandleTeam(player)
+    local Team = LocalPlayer.Team
+    if player.Team == Team and friendlyfire then
+        return true;
+    elseif player.Team == Team and friendlyfire == false then
+        return false;
+    else
+        return true;
+    end
+    return true;
+end
+
 local ClosestPlayer = function(friendlyfire)
     local MousePos = MousePosition()
     local Radius = FOV.Radius
     local Closest = math.huge
     local Target = nil
-    local function HandleTeam(player)
-        local Team = LocalPlayer.Team
-        local Result = true
-        if player.Team == Team and friendlyfire then
-            Result = true
-        elseif player.Team == Team and friendlyfire == false then
-            Result = false
-        else
-            Result = true
-        end
-        return Result
-    end
     for k,v in pairs(Players:GetPlayers()) do
         pcall(function()
             if HandleTeam(v) then
