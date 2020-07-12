@@ -24,11 +24,11 @@ local EzAimbot = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com
 local UserInputService = game:GetService("UserInputService");
 
 UserInputService.InputBegan:Connect(function(key)
-    if key.KeyCode == Enum.KeyCode[_G.aimSettings['aimToggle']] and not aimbotToggled then
+    if key.KeyCode == Enum.KeyCode[_G.aimSettings['aimbotToggle']] and not aimbotToggled then
         warn("Aimbot Enabled");
-        EzAimbot.Enable(fovEnabled, {["Size"]= _G.aimSettings['fovSize'], ["Sides"]= _G.aimSettings['fovSides'], ["Color"]= _G.aimSettings['fovColor']}, _G.aimSettings['friendlyFire']);
+        EzAimbot.Enable(fovEnabled, {["Size"]= _G.aimSettings['fovSize'], ["Sides"]= fovSides, ["Color"]= _G.aimSettings['fovColor']}, _G.aimSettings['friendlyFire']);
         aimbotToggled = true;
-    elseif key.KeyCode == Enum.KeyCode[_G.aimSettings['aimToggle']] and aimbotToggled then
+    elseif key.KeyCode == Enum.KeyCode[_G.aimSettings['aimbotToggle']] and aimbotToggled then
         warn("Aimbot Disabled");
         EzAimbot.Disable();
         aimbotToggled = false;
