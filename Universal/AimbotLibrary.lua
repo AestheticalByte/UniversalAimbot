@@ -73,7 +73,7 @@ local ClosestPlayer = function(friendlyFire)
             end
         end)
     end
-    return Target
+    return Target;
 end
 
 local RefreshInternals = function()
@@ -96,16 +96,16 @@ EzAimbot.Disable = function()
     RefreshInternals()
 end
 
-EzAimbot.Enable = function(showFov, fovConfig, friendlyFire)
-    assert(typeof(showFov)=="boolean","EzAimbot.Enable | Expected Boolean as argument #1")
-    assert(typeof(fovConfig)=="table","EzAimbot.Enable | Expected Table as argument #2")
-    assert(fovConfig["Size"],"EzAimbot.Enable | Expected Size in argument #2")
-    assert(fovConfig["Sides"],"EzAimbot.Enable | Expected Sides in argument #2")
-    assert(fovConfig["Color"],"EzAimbot.Enable | Expected Color in argument #2")
+EzAimbot.Enable = function(showfov, fovconfig, friendlyfire)
+    assert(typeof(showfov)=="boolean","EzAimbot.Enable | Expected Boolean as argument #1")
+    assert(typeof(fovconfig)=="table","EzAimbot.Enable | Expected Table as argument #2")
+    assert(fovconfig["Size"],"EzAimbot.Enable | Expected Size in argument #2")
+    assert(fovconfig["Sides"],"EzAimbot.Enable | Expected Sides in argument #2")
+    assert(fovconfig["Color"],"EzAimbot.Enable | Expected Color in argument #2")
     assert(type(fovconfig["Size"])=="number","EzAimbot.Enable | Expected Size in argument #2")
     assert(type(fovconfig["Sides"])=="number","EzAimbot.Enable | Expected Sides in argument #2")
     assert(typeof(fovconfig["Color"])=="Color3","EzAimbot.Enable | Expected Color in argument #2")
-    assert(type(friendlyFire)=="boolean","EzAimbot.Enable | Expected Boolean as argument #3")
+    assert(type(friendlyfire)=="boolean","EzAimbot.Enable | Expected Boolean as argument #3")
     local Size = fovConfig["Size"]
     local Sides = fovConfig["Sides"]
     local Color = fovConfig["Color"]
@@ -127,7 +127,7 @@ EzAimbot.Enable = function(showFov, fovConfig, friendlyFire)
         end
 
         if _G.lockedOn then
-            local ClosestPlayer = ClosestPlayer(friendlyFire)
+            local ClosestPlayer = ClosestPlayer(friendlyfire)
             if ClosestPlayer then
                 Camera.CFrame = CFrame.new(Camera.CFrame.p, ClosestPlayer.Character[aimPart].CFrame.p)
             end
