@@ -36,6 +36,16 @@ function HandleTeam(player)
     return true;
 end
 
+function checkObscuring()
+    local partsObscuring = Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character});
+    for _, v in pairs(partsObscuring) do
+        if v.Parent:FindFirstChild('Humanoid') then
+            return true;
+        end
+    end
+    return false;
+end
+
 local ClosestPlayer = function(friendlyfire)
     local MousePos = MousePosition()
     local Radius = FOV.Radius
@@ -67,6 +77,10 @@ local ClosestPlayer = function(friendlyfire)
                         if Distance < math.min(Radius,Closest) then
                             Closest = Distance
                             Target = v
+                        end
+                    elseif OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) > 0 then
+                        if checkObscuring() then
+                            print("Already locked onto a player!");
                         end
                     end
                 end
@@ -119,20 +133,19 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
         FOV.Visible = true
     end
 
-    _G.rate = 0.005; --(runs loop regardless of frames)
+    rate = 0.003; --(runs loop regardless of frames)
     local amount = 0;
-    print("Rate is ".._G.rate)
     MainLoop = RunService.Heartbeat:Connect(function(dlTime)
         amount = amount + dlTime;
-        while amount >= _G.rate do
-            amount = amount - _G.rate
+        while amount >= rate do
+            amount = amount - rate
             if FOV then
                 FOV.Position = MousePosition() + Vector2.new(0, 35);
             end
             if _G.lockedOn then
                 local ClosestPlayer = ClosestPlayer(friendlyfire)
                 if ClosestPlayer then
-                    Camera.CFrame = CFrame.new(Camera.CFrame.p,ClosestPlayer.Character[aimPart].CFrame.p);
+                    Camera.CFrame = CFrame.new(Camera.CFrame.p, ClosestPlayer.Character[aimPart].CFrame.p);
                 end
                 RefreshInternals()
             end
