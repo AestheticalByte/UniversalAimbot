@@ -36,23 +36,12 @@ function HandleTeam(player)
     return true;
 end
 
-function checkObscuring(plr)
-    if plr then
-        local partsObscuring = Camera:GetPartsObscuringTarget({Character[aimPart].Position, plr.Character[aimPart].Position}, {Character, plr.Character});
-        for _, v in pairs(partsObscuring) do
-            if v.Parent:FindFirstChild('Humanoid') then
-                return true;
-            end
-        end
-    end
-    return false;
-end
+local Target;
 
 local ClosestPlayer = function(friendlyfire)
     local MousePos = MousePosition()
     local Radius = FOV.Radius
     local Closest = math.huge
-    local Target = nil
     for k, v in pairs(Players:GetPlayers()) do
         pcall(function()
             if HandleTeam(v) then
@@ -71,25 +60,35 @@ local ClosestPlayer = function(friendlyfire)
                         aimPart = nil;
                     end
                 end
-        
-                if aimPart then
-                    local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
+                
+                if not _G.lockedOn then
+                    Target = nil;
+                end
+
+                local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
+                if aimPart and not Target then
                     if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
                         local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude
-                        if checkObscuring(Target) then
-                            print("Already locked onto a player!");
-                        elseif not checkObscuring(Target) then
-                            if Distance < math.min(Radius,Closest) then
-                                Closest = Distance
-                                Target = v
+                        if Distance < math.min(Radius,Closest) then
+                            Closest = Distance
+                            Target = v
+                        end
+                    end
+                elseif aimPart and Target then
+                    local obscuringParts = Camera:GetPartsObscuringTarget({Character[aimPart].Position, Target.Character[aimPart].Position}, {Character, Target.Character});
+                    if OnScreen and #obscuringParts > 0 then
+                        for _, v in pairs(obscuringParts) do
+                            if v.Parent:FindFirstChild('Humanoid') then 
+                                return Target;
                             end
                         end
                     end
+                    Target = nil;
                 end
             end
         end)
     end
-    return Target
+    return Target;
 end
 local RefreshInternals = function()
     Camera = workspace.CurrentCamera
