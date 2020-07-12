@@ -2,6 +2,8 @@
     Credits : ToddDev on v3rm for hot library
 ]]
 
+warn('Yea')
+
 --// Container
 
 local EzAimbot = {}
