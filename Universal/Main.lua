@@ -46,7 +46,7 @@ UserInputService.InputBegan:Connect(function(key)
     if key.KeyCode == Enum.KeyCode[_G.aimSettings['wallDetection']] and _G.wallOn then
         warn("Wall detection turned off.")
         _G.wallOn = false;
-    elseif if key.KeyCode == Enum.KeyCode[_G.aimSettings['togglePart']] and not _G.wallOn then
+    elseif key.KeyCode == Enum.KeyCode[_G.aimSettings['togglePart']] and not _G.wallOn then
         warn("Wall detection turned on.");
         _G.wallOn = true;
     end
