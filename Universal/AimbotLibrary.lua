@@ -8,7 +8,7 @@ local EzAimbot = {}
 
 --// Internal
 
-warn('Mhm')
+warn('Yea')
 
 local aimPart;
 local MainLoop;
@@ -38,7 +38,6 @@ function HandleTeam(player)
     return true;
 end
 
-local Target;
 
 function aimingPart(plr)
     if _G.partTarget == "Head" then
@@ -62,14 +61,15 @@ local lockPlayer = function(friendlyfire)
     local MousePos = MousePosition()
     local Radius = FOV.Radius
     local Closest = math.huge
+    local Target;
     for k, v in pairs(Players:GetPlayers()) do
         pcall(function()
             if HandleTeam(v) then
 
                 aimingPart(v);
 
-                local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
-                if aimPart and not Target then
+                if aimPart then
+                    local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
                     if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
                         local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude
                         if Distance < math.min(Radius,Closest) then
@@ -77,19 +77,6 @@ local lockPlayer = function(friendlyfire)
                             Target = v
                         end
                     end
-                elseif Target then
-                    aimingPart(Target);
-                    local obscuringParts = Camera:GetPartsObscuringTarget({Character[aimPart].Position, Target.Character[aimPart].Position}, {Character, Target.Character});
-                    if OnScreen and #obscuringParts > 0 then
-                        for _, v in pairs(obscuringParts) do
-                            if v.Parent:FindFirstChild('Humanoid') then 
-                                return Target;
-                            end
-                        end
-                    elseif OnScreen and #obscuringParts == 0 then
-                        return Target;
-                    end
-                    Target = nil;
                 end
             end
         end)
@@ -148,10 +135,6 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
             amount = amount - rate
             if FOV then
                 FOV.Position = MousePosition() + Vector2.new(0, 35);
-            end
-
-            if not _G.lockedOn then
-                Target = nil;
             end
 
             if _G.lockedOn then
