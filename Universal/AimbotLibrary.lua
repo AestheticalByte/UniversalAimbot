@@ -29,26 +29,22 @@ function aimPart(target, plr)
         if plr.Character:FindFirstChild("Head") and v ~= LocalPlayer then
             print('Set Head')
             aimPart = 'Head';
-            return true;
+            --return true;
         elseif not plr.Character:FindFirstChild("Head") or v == LocalPlayer then
-            return false;
+            --return false;
         end
     elseif target == "Torso" then
-        print("Torso Set!")
         if v ~= LocalPlayer then
             if plr.Character:FindFirstChild("Torso") then
                 aimPart = 'Torso';
-                return true;
+                --return true;
             elseif plr.Character:FindFirstChild("UpperTorso") then
                 aimPart = 'UpperTorso'
-                return true;
+                --return true;
             end
         elseif v == LocalPlayer or not (plr.Character:FindFirstChild("UpperTorso") or plr.Character:FindFirstChild("Torso")) then
-            return false;
+            --return false;
         end
-    else
-        print("Something's wrong")
-        return false;
     end
 end
 
@@ -74,6 +70,7 @@ local closestPlayer = function(friendlyfire)
             if HandleTeam(v) then
                 if aimPart(_G.partTarget, v) then
                     print("Player detected : "..v);
+                    print("Test")
                     local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position);
                     if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
                         local distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude;
@@ -82,8 +79,6 @@ local closestPlayer = function(friendlyfire)
                             target = v;
                         end
                     end
-                elseif not aimPart(_G.partTarget, v) then
-                    print("yea something definitely broke")
                 end
             end
         end)
