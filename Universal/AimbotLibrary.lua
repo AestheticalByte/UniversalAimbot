@@ -119,20 +119,7 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
         FOV.Visible = true
     end
 
-    -- MainLoop = RunService.RenderStepped:Connect(function()
-    --     if FOV then
-    --         FOV.Position = MousePosition()
-    --     end
-    --     if _G.lockedOn then
-    --         local ClosestPlayer = ClosestPlayer(friendlyfire)
-    --         if ClosestPlayer then
-    --             Camera.CFrame = CFrame.new(Camera.CFrame.p,ClosestPlayer.Character[aimPart].CFrame.p);
-    --         end
-    --         RefreshInternals()
-    --     end
-    -- end)
-
-    local rate = 0.01; --(runs loop regardless of frames)
+    local rate = 0.0095; --(runs loop regardless of frames)
     local amount = 0;
     print("Rate is "..rate)
     MainLoop = RunService.Heartbeat:Connect(function(dlTime)
@@ -140,7 +127,7 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
         while amount >= rate do
             amount = amount - rate
             if FOV then
-                FOV.Position = MousePosition()
+                FOV.Position = MousePosition() + Vector2.new(0, 35);
             end
             if _G.lockedOn then
                 local ClosestPlayer = ClosestPlayer(friendlyfire)
