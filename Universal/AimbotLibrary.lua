@@ -74,6 +74,7 @@ local ClosestPlayer = function(friendlyfire) -- Most of this stuff was ripped ri
                         if Distance < math.min(Radius,Closest) then
                             Closest = Distance
                             Target = v
+                            print(Target)
                         end
                     end
                 end
