@@ -132,7 +132,7 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
     --     end
     -- end)
 
-    local rate = 0.0095; --(runs loop regardless of frames)
+    local rate = 0.05; --(runs loop regardless of frames)
     local amount = 0;
     MainLoop = RunService.Heartbeat:Connect(function(dlTime)
         amount = amount + dlTime;
