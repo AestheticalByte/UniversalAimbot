@@ -28,19 +28,26 @@ function aimPart(bool)
     if bool then
         if v.Character:FindFirstChild("Head") and v ~= LocalPlayer then
             aimPart = 'Head';
+            return true;
+        else
+            return false;
         end
     elseif not bool then
         if v ~= LocalPlayer then
             if v.Character:FindFirstChild("Torso") then
                 aimPart = 'Torso';
+                return true;
             elseif v.Character:FindFirstChild("UpperTorso") then
                 aimPart = 'UpperTorso'
+                return true;
             end
+        else
+            return false;
         end
     end
 end
 
-local ClosestPlayer = function(friendlyFire)
+local ClosestPlayer = function(friendlyfire) -- Most of this stuff was ripped right out of my upcoming hub
     local MousePos = MousePosition()
     local Radius = FOV.Radius
     local Closest = math.huge
@@ -48,9 +55,9 @@ local ClosestPlayer = function(friendlyFire)
     local function HandleTeam(player)
         local Team = LocalPlayer.Team
         local Result = true
-        if player.Team == Team and friendlyFire then
+        if player.Team == Team and friendlyfire then
             Result = true
-        elseif player.Team == Team and friendlyFire == false then
+        elseif player.Team == Team and friendlyfire == false then
             Result = false
         else
             Result = true
@@ -60,20 +67,21 @@ local ClosestPlayer = function(friendlyFire)
     for k,v in pairs(Players:GetPlayers()) do
         pcall(function()
             if HandleTeam(v) then
-                aimPart(_G.headTarget);
-                local Point, OnScreen = Camera:WorldToScreenPoint(v.Character.Head.Position);
-                if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character.Head.Position}, {Character, v.Character}) == 0 then
-                    local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).Magnitude;
-
-                    if Distance < math.min(Radius, Closest) then
-                        Closest = Distance;
-                        Target = v;
+                if aimPart(_G.headTarget) then
+                    print("Everything looks good!")
+                    local Point,OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
+                    if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position,v.Character[aimPart].Position},{Character,v.Character}) == 0 then
+                        local Distance = (Vector2.new(Point.X,Point.Y) - MousePosition()).magnitude
+                        if Distance < math.min(Radius,Closest) then
+                            Closest = Distance
+                            Target = v
+                        end
                     end
                 end
             end
         end)
     end
-    return Target;
+    return Target
 end
 
 local RefreshInternals = function()
