@@ -119,7 +119,7 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
         FOV.Visible = true
     end
 
-    local rate = 0.01; --(runs loop regardless of frames)
+    local rate = 0.001; --(runs loop regardless of frames)
     local amount = 0;
     MainLoop = RunService.Heartbeat:Connect(function(dlTime)
         amount = amount + dlTime;
