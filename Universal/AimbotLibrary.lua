@@ -2,13 +2,13 @@
     Credits : ToddDev on v3rm for hot library
 ]]
 
-warn('Yea')
-
 --// Container
 
 local EzAimbot = {}
 
 --// Internal
+
+warn('Mhm')
 
 local aimPart;
 local MainLoop;
@@ -86,6 +86,8 @@ local lockPlayer = function(friendlyfire)
                                 return Target;
                             end
                         end
+                    elseif OnScreen and #obscuringParts == 0 then
+                        return Target;
                     end
                     Target = nil;
                 end
