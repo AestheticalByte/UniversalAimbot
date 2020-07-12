@@ -31,6 +31,7 @@ function aimPart(target, plr)
             aimPart = 'Head';
             --return true;
         elseif not plr.Character:FindFirstChild("Head") or v == LocalPlayer then
+            aimPart = nil;
             --return false;
         end
     elseif target == "Torso" then
@@ -43,9 +44,11 @@ function aimPart(target, plr)
                 --return true;
             end
         elseif v == LocalPlayer or not (plr.Character:FindFirstChild("UpperTorso") or plr.Character:FindFirstChild("Torso")) then
+            aimPart = nil;
             --return false;
         end
     end
+    return aimPart
 end
 
 function HandleTeam(player)
@@ -70,7 +73,6 @@ local closestPlayer = function(friendlyfire)
             if HandleTeam(v) then
                 if aimPart(_G.partTarget, v) then
                     print("Player detected : "..v);
-                    print("Test")
                     local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position);
                     if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
                         local distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude;
