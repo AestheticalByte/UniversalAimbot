@@ -7,8 +7,8 @@
 local EzAimbot = {}
 
 --// Internal
-
-warn('Yea')
+local buildID = "0.0.1"
+warn('Build ID : '..buildID)
 
 local aimPart;
 local MainLoop;
@@ -57,6 +57,14 @@ function aimingPart(plr)
     end
 end
 
+function healthCheck(plr)
+    if plr.Character.Humanoid.Health > 0 then
+        return true;
+    elseif plr.Character.Humanoid.Health == 0 then
+        return false;
+    end
+end
+
 local lockPlayer = function(friendlyfire)
     local MousePos = MousePosition()
     local Radius = FOV.Radius
@@ -68,9 +76,17 @@ local lockPlayer = function(friendlyfire)
 
                 aimingPart(v);
 
-                if aimPart then
+                if aimPart and _G.wallOn then
                     local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
                     if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
+                        local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude
+                        if Distance < math.min(Radius,Closest) then
+                            Closest = Distance
+                            Target = v
+                        end
+                    end
+                elseif aimPart and not _G.wallOn then
+                    if #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
                         local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude
                         if Distance < math.min(Radius,Closest) then
                             Closest = Distance

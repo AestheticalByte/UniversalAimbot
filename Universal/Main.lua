@@ -12,10 +12,10 @@ end)
 
 -- // Basic vars
 _G.partTarget = 'Head'; -- Head, Torso
+_G.wallOn = true;
 local fovEnabled = true;
 local fovSides = 50; 
-local aimbotToggled;
-local headToggled = true;
+local aimbotToggled = false;
 local version = '1.1.2';
 
 -- // Aimbot library
@@ -35,14 +35,20 @@ UserInputService.InputBegan:Connect(function(key)
         aimbotToggled = false;
     end
 
-    if key.KeyCode == Enum.KeyCode[_G.aimSettings['togglePart']] and headToggled then
+    if key.KeyCode == Enum.KeyCode[_G.aimSettings['togglePart']] and _G.partTarget == "Head" then
         warn("Target Set : Torso")
-        headToggled = false;
         _G.partTarget = 'Torso';
-    elseif key.KeyCode == Enum.KeyCode[_G.aimSettings['togglePart']] and not headToggled then
+    elseif key.KeyCode == Enum.KeyCode[_G.aimSettings['togglePart']] and _G.partTarget == "Torso" then
         warn("Target Set : Head")
-        headToggled = true;
         _G.partTarget = 'Head';
+    end
+
+    if key.KeyCode == Enum.KeyCode[_G.aimSettings['wallDetection']] and _G.wallOn then
+        warn("Wall detection turned off.")
+        _G.wallOn = false;
+    elseif if key.KeyCode == Enum.KeyCode[_G.aimSettings['togglePart']] and not _G.wallOn then
+        warn("Wall detection turned on.");
+        _G.wallOn = true;
     end
 end)
 
