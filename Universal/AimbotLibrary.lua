@@ -25,30 +25,28 @@ local MousePosition = function()
 end
 
 function aimPart(target, plr)
+    print(target)
     if target == "Head" then
         if plr.Character:FindFirstChild("Head") and v ~= LocalPlayer then
-            print('Set Head')
             aimPart = 'Head';
-            --return true;
+            return true;
         elseif not plr.Character:FindFirstChild("Head") or v == LocalPlayer then
-            aimPart = nil;
-            --return false;
+            return false;
         end
     elseif target == "Torso" then
         if v ~= LocalPlayer then
             if plr.Character:FindFirstChild("Torso") then
                 aimPart = 'Torso';
-                --return true;
+                return true;
             elseif plr.Character:FindFirstChild("UpperTorso") then
                 aimPart = 'UpperTorso'
-                --return true;
+                return true;
             end
         elseif v == LocalPlayer or not (plr.Character:FindFirstChild("UpperTorso") or plr.Character:FindFirstChild("Torso")) then
-            aimPart = nil;
-            --return false;
+            return false;
         end
     end
-    return aimPart
+    print("This line of code shouldn't print!")
 end
 
 function HandleTeam(player)
@@ -72,6 +70,7 @@ local closestPlayer = function(friendlyfire)
         pcall(function()
             if HandleTeam(v) then
                 if aimPart(_G.partTarget, v) then
+                    print("---")
                     print("Player detected : "..v);
                     local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position);
                     if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
