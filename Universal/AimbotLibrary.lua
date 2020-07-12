@@ -132,8 +132,9 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
     --     end
     -- end)
 
-    local rate = 0.6; --10x a second
+    local rate = 0.6; --60x a second (runs loop regardless of frames)
     local amount = 0;
+    print("huh its not updating")
     MainLoop = RunService.Heartbeat:Connect(function(dlTime)
         amount = amount + dlTime;
         while amount >= rate do
