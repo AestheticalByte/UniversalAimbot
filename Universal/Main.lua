@@ -16,7 +16,7 @@ _G.wallOn = true;
 local fovEnabled = true;
 local fovSides = 50; 
 local aimbotToggled = false;
-local version = '1.1.2';
+local version = '1.3.0';
 
 -- // Aimbot library
 local EzAimbot = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/AestheticalByte/UniversalAimbot/master/Universal/AimbotLibrary.lua"))();
@@ -44,10 +44,10 @@ UserInputService.InputBegan:Connect(function(key)
     end
 
     if key.KeyCode == Enum.KeyCode[_G.aimSettings['wallDetection']] and _G.wallOn then
-        warn("Wall detection turned off.")
+        warn("WallDetect Disabled")
         _G.wallOn = false;
-    elseif key.KeyCode == Enum.KeyCode[_G.aimSettings['togglePart']] and not _G.wallOn then
-        warn("Wall detection turned on.");
+    elseif key.KeyCode == Enum.KeyCode[_G.aimSettings['wallDetection']] and not _G.wallOn then
+        warn("WallDetect Enabled");
         _G.wallOn = true;
     end
 end)

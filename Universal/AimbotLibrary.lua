@@ -3,7 +3,6 @@
 ]]
 
 --// Container
-
 local EzAimbot = {}
 
 --// Internal
@@ -63,42 +62,79 @@ function healthCheck(plr)
     elseif plr.Character.Humanoid.Health == 0 then
         return false;
     end
+    print(plr.Character.Humanoid.Health)
 end
 
+function checkHumanoid(tb)
+    for _, v in pairs(tb) do
+        if v.Parent:FindFirstChild('Humanoid') then
+            return true;
+        elseif v.Parent.ClassName == 'Accessory' or v.Parent.Parent:FindFirstChild('Humanoid') then
+            return true;
+        elseif v:FindFirstChild('Handle') or v.ClassName == 'Accessory' then
+            return true;
+        end
+    end
+    return false;
+end
+
+local setTarget;
+local playerSet;
+
 local lockPlayer = function(friendlyfire)
-    local MousePos = MousePosition()
-    local Radius = FOV.Radius
-    local Closest = math.huge
-    local Target;
-    for k, v in pairs(Players:GetPlayers()) do
+    local radius = FOV.Radius
+    local closest = math.huge
+    for _, v in pairs(Players:GetPlayers()) do
         pcall(function()
             if HandleTeam(v) then
+                if healthCheck(v) then
+                    aimingPart(v);
 
-                aimingPart(v);
-
-                if aimPart and _G.wallOn then
-                    local Point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
-                    if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
-                        local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude
-                        if Distance < math.min(Radius,Closest) then
-                            Closest = Distance
-                            Target = v
-                        end
-                    end
-                elseif aimPart and not _G.wallOn then
-                    local Point = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
-                    if #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
-                        local Distance = (Vector2.new(Point.X, Point.Y) - MousePosition()).magnitude
-                        if Distance < math.min(Radius,Closest) then
-                            Closest = Distance
-                            Target = v
+                    if not setTarget and not playerSet then
+                        if aimPart and _G.wallOn then
+                            local point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
+                            if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
+                                local distance = (Vector2.new(point.X, point.Y) - MousePosition()).magnitude
+                                if distance < math.min(radius, closest) then
+                                    closest = distance
+                                    setTarget = v;
+                                end
+                            end
+                        elseif aimPart and not _G.wallOn then
+                            local point, onScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
+                            local distance = (Vector2.new(point.X, point.Y) - MousePosition()).magnitude
+                            if distance < math.min(radius, closest) then
+                                closest = distance
+                                setTarget = v;
+                            end
                         end
                     end
                 end
             end
         end)
     end
-    return Target;
+    if setTarget and playerSet then
+        if healthCheck(setTarget) then
+
+            aimingPart(setTarget);
+
+            if aimPart and _G.wallOn then
+                local OnScreen = Camera:WorldToScreenPoint(setTarget.Character[aimPart].Position);
+                local screenParts = Camera:GetPartsObscuringTarget({Character[aimPart].Position, setTarget.Character[aimPart].Position}, {Character, setTarget.Character});
+                if (OnScreen and checkHumanoid(screenParts)) or (OnScreen and #screenParts == 0) or (checkHumanoid(screenParts)) then
+                    return setTarget;
+                end
+            elseif aimPart and not _G.wallOn then
+                return setTarget;
+            end
+            warn("Issue encountered!")
+            playerSet = nil;
+            setTarget = nil;
+            return setTarget;
+        end
+    end
+    playerSet = true;
+    return setTarget;
 end
 local RefreshInternals = function()
     Camera = workspace.CurrentCamera
@@ -154,6 +190,11 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
                 FOV.Position = MousePosition() + Vector2.new(0, 35);
             end
 
+            if not _G.lockedOn then
+                playerSet = nil;
+                setTarget = nil;
+            end
+
             if _G.lockedOn then
                 local lockPlayer = lockPlayer(friendlyfire)
                 if lockPlayer then
@@ -164,5 +205,3 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
         end
     end)
 end
-
-return EzAimbot

@@ -1,6 +1,6 @@
 # UniversalAimbot
 
-**Version : 1.1.2**
+**Version : 1.3.0**
 
 *Credits to ToddDev on v3rm for the library.*
 
@@ -11,7 +11,7 @@ _G.aimSettings = {
     togglePart = "F2";
     aimbotToggle = "F1";
     fovColor = Color3.fromRGB(127, 0, 255);
-    wallDetection = "F3"; -- on my default
+    wallDetection = "F3";
 }
 
 loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/AestheticalByte/UniversalAimbot/master/Universal/Main.lua"))();
