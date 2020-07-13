@@ -205,3 +205,5 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
         end
     end)
 end
+
+return EzAimbot;
