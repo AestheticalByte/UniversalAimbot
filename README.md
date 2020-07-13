@@ -1,6 +1,6 @@
 # UniversalAimbot
 
-**Version : 1.3.0**
+**Version : 1.3.1**
 
 *Credits to ToddDev on v3rm for the library.*
 
