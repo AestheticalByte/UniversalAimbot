@@ -6,7 +6,7 @@
 local EzAimbot = {}
 
 --// Internal
-local buildID = "0.0.2"
+local buildID = "0.0.3"
 warn('Build ID : '..buildID)
 
 local aimPart;
@@ -62,7 +62,7 @@ function healthCheck(plr)
     elseif plr.Character.Humanoid.Health == 0 then
         return false;
     end
-    print(plr.Character.Humanoid.Health)
+    return false;
 end
 
 function checkHumanoid(tb)
@@ -114,6 +114,7 @@ local lockPlayer = function(friendlyfire)
         end)
     end
     if setTarget and playerSet then
+        setTarget = game.Players:FindFirstChild(setTarget.Name)
         if healthCheck(setTarget) then
 
             aimingPart(setTarget);
@@ -128,7 +129,11 @@ local lockPlayer = function(friendlyfire)
                 return setTarget;
             end
             warn("Issue encountered!")
-            playerSet = nil;
+            playerSet = false;
+            setTarget = nil;
+            return setTarget;
+        elseif not healthCheck(setTarget) then
+            playerSet = false;
             setTarget = nil;
             return setTarget;
         end
@@ -180,7 +185,7 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
         FOV.Visible = true
     end
 
-    rate = 0.003; --(runs loop regardless of frames)
+    rate = 0.0025; --(runs loop regardless of frames)
     local amount = 0;
     MainLoop = RunService.Heartbeat:Connect(function(dlTime)
         amount = amount + dlTime;
