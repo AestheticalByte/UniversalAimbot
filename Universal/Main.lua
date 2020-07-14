@@ -12,7 +12,7 @@ end)
 
 -- // Global GUI Vars
 local screenGui = Instance.new('ScreenGui');
-screenGui.Parent = game.StarterGui;
+screenGui.Parent = game.CoreGui;
 
 local aimbotToggle = Instance.new('TextLabel');
 local aimbotTarget = Instance.new('TextLabel');
@@ -63,6 +63,11 @@ function createGUI()
     aimbotToggle.Position = UDim2.new(0.005, 0, 0.911, 0);
     aimbotTarget.Position = UDim2.new(0.005, 0, 0.941, 0);
     aimbotWalls.Position = UDim2.new(0.005, 0, 0.97, 0);
+
+    -- // textName
+    aimbotToggle.Name = 'aimbotToggle';
+    aimbotTarget.Name = 'aimbotTarget';
+    aimbotWalls.Name = 'aimbotWalls';
 end
 
 createGUI()

@@ -156,7 +156,7 @@ local lockPlayer = function(friendlyfire)
 
             if aimPart and _G.wallOn then
                 local onScreen = Camera:WorldToScreenPoint(setTarget.Character[aimPart].Position);
-                if onScreen and getAllParts(setTarget.Character[aimPart].Position, {Character, setTarget.Character}, setTarget) then
+                if onScreen and getAllParts(setTarget.Character[aimPart].Position, {Character, setTarget.Character}) then
                     return setTarget;
                 end
             elseif aimPart and not _G.wallOn then
