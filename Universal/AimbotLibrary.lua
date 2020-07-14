@@ -6,7 +6,7 @@
 local EzAimbot = {}
 
 --// Internal
-local buildID = "0.0.3"
+local buildID = "0.0.4"
 warn('Build ID : '..buildID)
 
 local aimPart;
@@ -65,17 +65,53 @@ function healthCheck(plr)
     return false;
 end
 
-function checkHumanoid(tb)
-    for _, v in pairs(tb) do
-        if v.Parent:FindFirstChild('Humanoid') then
-            return true;
-        elseif v.Parent.ClassName == 'Accessory' or v.Parent.Parent:FindFirstChild('Humanoid') then
-            return true;
-        elseif v:FindFirstChild('Handle') or v.ClassName == 'Accessory' then
-            return true;
+function getAllParts(finalPoint, ignoreList)
+    -- // create ray
+    local plrCam = Camera.CFrame.p;
+    local rayVector = Ray.new(plrCam, finalPoint - plrCam);
+
+    -- // create a table of all parts between LocalPlayer and setTarget
+    local partsList = {};
+
+    for _, v in pairs(ignoreList) do
+        table.insert(partsList, v)
+    end
+
+    local lastPart = true;
+    
+    while lastPart do
+        lastPart = workspace:FindPartOnRayWithIgnoreList(rayVector, partsList)
+        table.insert(partsList, lastPart)
+    end
+    
+    for i, v in pairs(partsList) do
+        if v == ignoreList[1] or v == ignoreList[2] then
+            table.remove(partsList, i)
         end
     end
-    return false;
+
+    -- // check if there are any non humanoid parts obscuring
+    local checkHumanoid = true;
+    if #partsList ~= 0 then
+        for _, v in pairs(partsList) do
+            local opt = {
+                v.Parent:FindFirstChild('Humanoid');
+                v:FindFirstChild('Humanoid');
+                v.Parent.Parent:FindFirstChild('Humanoid');
+                v:FindFirstChild('Handle');
+            }
+
+            if not opt[1] and not opt[2] and not opt[3] and not opt[4] and v.ClassName ~= 'Accessory' and v.Parent.ClassName ~= 'Accessory' then
+                print('Obscuring part : ', v:GetFullName())
+                checkHumanoid = false;
+            end
+
+            if not checkHumanoid then
+                return false;
+            end
+        end
+    end
+    return true;
 end
 
 local setTarget;
@@ -84,28 +120,28 @@ local playerSet;
 local lockPlayer = function(friendlyfire)
     local radius = FOV.Radius
     local closest = math.huge
-    for _, v in pairs(Players:GetPlayers()) do
+    for _, plr in pairs(Players:GetPlayers()) do
         pcall(function()
-            if HandleTeam(v) then
-                if healthCheck(v) then
-                    aimingPart(v);
+            if HandleTeam(plr) then
+                if healthCheck(plr) then
+                    aimingPart(plr);
 
                     if not setTarget and not playerSet then
                         if aimPart and _G.wallOn then
-                            local point, OnScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
-                            if OnScreen and #Camera:GetPartsObscuringTarget({Character[aimPart].Position, v.Character[aimPart].Position}, {Character, v.Character}) == 0 then
-                                local distance = (Vector2.new(point.X, point.Y) - MousePosition()).magnitude
-                                if distance < math.min(radius, closest) then
-                                    closest = distance
-                                    setTarget = v;
-                                end
-                            end
-                        elseif aimPart and not _G.wallOn then
-                            local point, onScreen = Camera:WorldToScreenPoint(v.Character[aimPart].Position)
+                            local point, onScreen = Camera:WorldToScreenPoint(plr.Character[aimPart].Position)
                             local distance = (Vector2.new(point.X, point.Y) - MousePosition()).magnitude
                             if distance < math.min(radius, closest) then
                                 closest = distance
-                                setTarget = v;
+                                if onScreen and getAllParts(plr.Character[aimPart].Position, {Character, plr.Character}) then
+                                    setTarget = plr;
+                                end
+                            end
+                        elseif aimPart and not _G.wallOn then
+                            local point = Camera:WorldToScreenPoint(plr.Character[aimPart].Position)
+                            local distance = (Vector2.new(point.X, point.Y) - MousePosition()).magnitude
+                            if distance < math.min(radius, closest) then
+                                closest = distance
+                                setTarget = plr;
                             end
                         end
                     end
@@ -114,15 +150,13 @@ local lockPlayer = function(friendlyfire)
         end)
     end
     if setTarget and playerSet then
-        setTarget = game.Players:FindFirstChild(setTarget.Name)
         if healthCheck(setTarget) then
 
             aimingPart(setTarget);
 
             if aimPart and _G.wallOn then
-                local OnScreen = Camera:WorldToScreenPoint(setTarget.Character[aimPart].Position);
-                local screenParts = Camera:GetPartsObscuringTarget({Character[aimPart].Position, setTarget.Character[aimPart].Position}, {Character, setTarget.Character});
-                if (OnScreen and checkHumanoid(screenParts)) or (OnScreen and #screenParts == 0) or (checkHumanoid(screenParts)) then
+                local onScreen = Camera:WorldToScreenPoint(setTarget.Character[aimPart].Position);
+                if onScreen and getAllParts(setTarget.Character[aimPart].Position, {Character, setTarget.Character}, setTarget) then
                     return setTarget;
                 end
             elseif aimPart and not _G.wallOn then
