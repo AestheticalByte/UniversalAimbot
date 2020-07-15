@@ -6,30 +6,30 @@
 local EzAimbot = {}
 
 --// Internal
-local buildID = "0.0.4"
+local buildID = "0.0.5"
 warn('Build ID : '..buildID)
 
 local aimPart;
 local MainLoop;
-local Camera = workspace.CurrentCamera
-local Viewport = Camera.ViewportSize
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character
-local Mouse = LocalPlayer:GetMouse()
 local FOV;
-local RunService = game:GetService("RunService")
-local InputService = game:GetService("UserInputService")
+local Camera = workspace.CurrentCamera;
+local Viewport = Camera.ViewportSize;
+local Players = game:GetService("Players");
+local LocalPlayer = Players.LocalPlayer;
+local Character = LocalPlayer.Character;
+local Mouse = LocalPlayer:GetMouse();
+local RunService = game:GetService("RunService");
+local InputService = game:GetService("UserInputService");
 
-local MousePosition = function()
-    return Vector2.new(Mouse.X,Mouse.Y)
+local function mousePosition()
+    return Vector2.new(Mouse.X,Mouse.Y);
 end
 
-function HandleTeam(player)
-    local Team = LocalPlayer.Team
-    if player.Team == Team and friendlyfire then
+local function HandleTeam(player)
+    local team = LocalPlayer.Team;
+    if player.Team == team and friendlyfire then
         return true;
-    elseif player.Team == Team and friendlyfire == false then
+    elseif player.Team == team and friendlyfire == false then
         return false;
     else
         return true;
@@ -38,7 +38,7 @@ function HandleTeam(player)
 end
 
 
-function aimingPart(plr)
+local function aimingPart(plr)
     if _G.partTarget == "Head" then
         if plr.Character:FindFirstChild("Head") and plr ~= LocalPlayer then
             aimPart = "Head";
@@ -54,9 +54,10 @@ function aimingPart(plr)
             aimPart = nil;
         end
     end
+    return aimPart;
 end
 
-function healthCheck(plr)
+local function healthCheck(plr)
     if plr.Character.Humanoid.Health > 0 then
         return true;
     elseif plr.Character.Humanoid.Health == 0 then
@@ -65,7 +66,7 @@ function healthCheck(plr)
     return false;
 end
 
-function getAllParts(finalPoint, ignoreList)
+local function getAllParts(finalPoint)
     -- // create ray
     local plrCam = Camera.CFrame.p;
     local rayVector = Ray.new(plrCam, finalPoint - plrCam);
@@ -73,23 +74,13 @@ function getAllParts(finalPoint, ignoreList)
     -- // create a table of all parts between LocalPlayer and setTarget
     local partsList = {};
 
-    for _, v in pairs(ignoreList) do
-        table.insert(partsList, v)
-    end
-
     local lastPart = true;
     
     while lastPart do
-        lastPart = workspace:FindPartOnRayWithIgnoreList(rayVector, partsList)
-        table.insert(partsList, lastPart)
+        lastPart = workspace:FindPartOnRayWithIgnoreList(rayVector, partsList);
+        table.insert(partsList, lastPart);
     end
     
-    for i, v in pairs(partsList) do
-        if v == ignoreList[1] or v == ignoreList[2] then
-            table.remove(partsList, i)
-        end
-    end
-
     -- // check if there are any non humanoid parts obscuring
     local checkHumanoid = true;
     if #partsList ~= 0 then
@@ -102,7 +93,7 @@ function getAllParts(finalPoint, ignoreList)
             }
 
             if not opt[1] and not opt[2] and not opt[3] and not opt[4] and v.ClassName ~= 'Accessory' and v.Parent.ClassName ~= 'Accessory' then
-                print('Obscuring part : ', v:GetFullName())
+                print('Obscuring part : ', v:GetFullName());
                 checkHumanoid = false;
             end
 
@@ -115,86 +106,78 @@ function getAllParts(finalPoint, ignoreList)
 end
 
 local setTarget;
-local playerSet;
 
-local lockPlayer = function(friendlyfire)
-    local radius = FOV.Radius
-    local closest = math.huge
-    for _, plr in pairs(Players:GetPlayers()) do
-        pcall(function()
+local function lockPlayer(friendlyfire)
+    local radius = FOV.Radius;
+    local closest = math.huge;
+    if not setTarget then
+        for _, plr in pairs(Players:GetPlayers()) do
             if HandleTeam(plr) then
-                if healthCheck(plr) then
-                    aimingPart(plr);
-
-                    if not setTarget and not playerSet then
-                        if aimPart and _G.wallOn then
-                            local point, onScreen = Camera:WorldToScreenPoint(plr.Character[aimPart].Position)
-                            local distance = (Vector2.new(point.X, point.Y) - MousePosition()).magnitude
-                            if distance < math.min(radius, closest) then
-                                closest = distance
-                                if onScreen and getAllParts(plr.Character[aimPart].Position, {Character, plr.Character}) then
-                                    setTarget = plr;
-                                end
-                            end
-                        elseif aimPart and not _G.wallOn then
-                            local point = Camera:WorldToScreenPoint(plr.Character[aimPart].Position)
-                            local distance = (Vector2.new(point.X, point.Y) - MousePosition()).magnitude
-                            if distance < math.min(radius, closest) then
-                                closest = distance
+                if healthCheck(plr) and aimingPart(plr) then
+                    local point, onScreen = Camera:WorldToScreenPoint(plr.Character[aimPart].Position)
+                    local distance = (Vector2.new(point.X, point.Y) - mousePosition()).magnitude
+                    if _G.wallOn then
+                        if distance < math.min(radius, closest) then
+                            closest = distance;
+                            if onScreen and getAllParts(plr.Character[aimPart].Position) then
                                 setTarget = plr;
                             end
+                        end
+                    elseif not _G.wallOn then
+                        if onScreen and distance < math.min(radius, closest) then
+                            closest = distance;
+                            setTarget = plr;
                         end
                     end
                 end
             end
-        end)
-    end
-    if setTarget and playerSet then
-        if healthCheck(setTarget) then
+        end
 
-            aimingPart(setTarget);
+        if setTarget then
+            print("The target is : "..setTarget:GetFullName());
+        end
+        return setTarget;
 
-            if aimPart and _G.wallOn then
+    elseif setTarget then
+        if healthCheck(setTarget) and aimingPart(setTarget) then
+            if _G.wallOn then
                 local onScreen = Camera:WorldToScreenPoint(setTarget.Character[aimPart].Position);
-                if onScreen and getAllParts(setTarget.Character[aimPart].Position, {Character, setTarget.Character}) then
+                if onScreen and getAllParts(setTarget.Character[aimPart].Position) then
                     return setTarget;
                 end
-            elseif aimPart and not _G.wallOn then
+            elseif not _G.wallOn then
                 return setTarget;
             end
+            -- // debugging purposes
             warn("Issue encountered!")
-            playerSet = false;
             setTarget = nil;
             return setTarget;
         elseif not healthCheck(setTarget) then
-            playerSet = false;
+            warn("Target Died")
             setTarget = nil;
             return setTarget;
         end
     end
-    playerSet = true;
-    return setTarget;
 end
-local RefreshInternals = function()
-    Camera = workspace.CurrentCamera
-    LocalPlayer = Players.LocalPlayer
-    Character = LocalPlayer.Character
+local function refreshVariables()
+    Camera = workspace.CurrentCamera;
+    LocalPlayer = Players.LocalPlayer;
+    Character = LocalPlayer.Character;
 end
 
 --// Main functions
-
-EzAimbot.Disable = function()
-    if MainLoop then
-        MainLoop:Disconnect()
-        MainLoop = nil
+function EzAimbot.Disable()
+    if mainLoop then
+        mainLoop:Disconnect()
+        mainLoop = nil
     end
     if FOV then
         FOV:Remove()
     end
-    RefreshInternals()
+    refreshVariables()
 end
 
-EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
+function EzAimbot.Enable(showfov,fovconfig, friendlyfire)
     assert(typeof(showfov)=="boolean","EzAimbot.Enable | Expected Boolean as argument #1")
     assert(typeof(fovconfig)=="table","EzAimbot.Enable | Expected Table as argument #2")
     assert(fovconfig["Size"],"EzAimbot.Enable | Expected Size in argument #2")
@@ -211,7 +194,7 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
         FOV = Drawing.new("Circle")
         local FOV = FOV
         FOV.NumSides = Sides
-        FOV.Position = MousePosition()
+        FOV.Position = mousePosition()
         FOV.Radius = Size
         FOV.Thickness = 2
         FOV.Radius = Size
@@ -219,28 +202,45 @@ EzAimbot.Enable = function(showfov,fovconfig, friendlyfire)
         FOV.Visible = true
     end
 
-    rate = 0.0025; --(runs loop regardless of frames)
+    -- // Mouse functions
+    local lockedOn = nil;
+
+    Mouse.Button2Down:Connect(function()
+        lockedOn = true;
+    end)
+
+    Mouse.Button2Up:Connect(function()
+        lockedOn = false;
+    end)
+
+    -- // Camera functions
+    function isThirdPerson()
+        if (Character.Head.CFrame.p - Camera.CFrame.p).magnitude < 1 then
+            return false;
+        elseif (Character.Head.CFrame.p - Camera.CFrame.p).magnitude > 1 then
+            return true;
+        end
+    end
+
+    -- -- // runs loop regardless of frames without relying on wait()
+    rate = 0.007;
     local amount = 0;
-    MainLoop = RunService.Heartbeat:Connect(function(dlTime)
+    mainLoop = RunService.Heartbeat:Connect(function(dlTime)
         amount = amount + dlTime;
         while amount >= rate do
             amount = amount - rate
             if FOV then
-                FOV.Position = MousePosition() + Vector2.new(0, 35);
+                FOV.Position = mousePosition() + Vector2.new(0, 35);
             end
 
-            if not _G.lockedOn then
-                playerSet = nil;
+            if lockedOn then
+                if lockPlayer(friendlyFire) then
+                        Camera.CFrame = CFrame.new(Camera.CFrame.p, setTarget.Character[aimPart].CFrame.p);
+                end
+            elseif not lockedOn then
                 setTarget = nil;
             end
-
-            if _G.lockedOn then
-                local lockPlayer = lockPlayer(friendlyfire)
-                if lockPlayer then
-                    Camera.CFrame = CFrame.new(Camera.CFrame.p, lockPlayer.Character[aimPart].CFrame.p);
-                end
-                RefreshInternals()
-            end
+            refreshVariables()
         end
     end)
 end

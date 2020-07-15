@@ -1,15 +1,3 @@
--- // Mouse press events
-_G.lockedOn = nil;
-local Mouse = game.Players.LocalPlayer:GetMouse();
-
-Mouse.Button2Down:Connect(function()
-	_G.lockedOn = true;
-end)
-
-Mouse.Button2Up:Connect(function()
-    _G.lockedOn = false;
-end)
-
 -- // Global GUI Vars
 local screenGui = Instance.new('ScreenGui');
 screenGui.Parent = game.CoreGui;
@@ -18,7 +6,7 @@ local aimbotToggle = Instance.new('TextLabel');
 local aimbotTarget = Instance.new('TextLabel');
 local aimbotWalls = Instance.new('TextLabel');
 
-function createGUI()
+local function createGUI()
     -- // textLabelParent
     aimbotToggle.Parent = screenGui;
     aimbotTarget.Parent = screenGui;
@@ -78,7 +66,7 @@ _G.wallOn = true;
 local fovEnabled = true;
 local fovSides = 50; 
 local aimbotToggled = false;
-local version = '1.4.1';
+local version = '1.4.3';
 
 -- // Aimbot library
 local EzAimbot = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/AestheticalByte/UniversalAimbot/master/Universal/AimbotLibrary.lua"))();
